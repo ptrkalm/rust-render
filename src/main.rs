@@ -28,7 +28,7 @@ async fn main() -> std::io::Result<()> {
             .service(routes::add_user)
             .service(routes::delete_user)
     })
-    .bind("127.0.0.1:8088")?
+    .bind(std::env::var("ADDR").expect("ADDR must be set"))?
     .run()
     .await
 }
