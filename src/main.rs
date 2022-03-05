@@ -1,16 +1,28 @@
-use actix_web::*;
-mod routes;
+#[macro_use]
+extern crate diesel;
 
-#[get("/")]
-async fn index() -> impl Responder {
-    "Hello world!"
-}
+use actix_web::{HttpServer, App};
+use diesel::prelude::*;
+use diesel::r2d2::{self, ConnectionManager};
+
+mod routes;
+mod models;
+mod schema;
+
+pub type Pool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    dotenv::dotenv().ok();
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE URL must be set");
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
+    let pool: Pool = r2d2::Pool::builder()
+        .build(manager)
+        .expect("Failed to create pool.");
+
+    HttpServer::new(move || {
         App::new()
-            .service(index)
+            .data(pool.clone())
             .service(routes::get_users)
             .service(routes::get_user)
             .service(routes::add_user)
