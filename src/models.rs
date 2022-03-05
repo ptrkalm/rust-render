@@ -14,3 +14,9 @@ pub struct NewUser<'a> {
     pub username: &'a str,
     pub email: &'a str
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct InputUser {
+    pub username: String,
+    pub email: String
+}
