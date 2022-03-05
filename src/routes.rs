@@ -20,7 +20,7 @@ pub async fn get_user(db: web::Data<Pool>, user_id: web::Path<i32>) -> Result<Ht
     )
 }
 
-#[post("/users/{id}")]
+#[post("/users")]
 pub async fn add_user(db: web::Data<Pool>, user: web::Json<InputUser>) -> Result<HttpResponse, Error> {
     Ok(web::block(move || db::add_user(db, user.into_inner()))
         .await
